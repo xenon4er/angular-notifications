@@ -2,11 +2,19 @@
 <html ng-app="angularNotificationsTest">
 <head>
     <title></title>
+    <link rel="stylesheet" type="text/css" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
 </head>
 <body>
     <div ng-controller="notificationController as notifications">
         {{notifications.hello}}<br />
-        <button ng-click="notifications.showNotification()">show notification</button>
+        <button class="btn btn-success" ng-click="notifications.showSuccessNotification()">
+        	show success</button>
+        <button class="btn btn-info" ng-click="notifications.showInfoNotification()">
+        	show info</button>
+        <button class="btn btn-warning" ng-click="notifications.showWarningNotification()">
+        	show warning</button>
+        <button class="btn btn-danger" ng-click="notifications.showErrorNotification()">
+        	show error</button>
         
         
     </div>

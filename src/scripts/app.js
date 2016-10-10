@@ -5,9 +5,24 @@ angular.module('angularNotificationsTest').controller('notificationController',f
     self.hello = "Hi!";
    
 
-    self.showNotification = function(){
+    self.showSuccessNotification = function(){
         self.date = new Date();
-        Notification();
+        Notification.success(self.date);
+        self.hello = "Hi! " + self.date;
+    }
+    self.showInfoNotification = function(){
+        self.date = new Date();
+        Notification.info(self.date);
+        self.hello = "Hi! " + self.date;
+    }
+    self.showWarningNotification = function(){
+        self.date = new Date();
+        Notification.warning(self.date);
+        self.hello = "Hi! " + self.date;
+    }
+    self.showErrorNotification = function(){
+        self.date = new Date();
+        Notification.error(self.date);
         self.hello = "Hi! " + self.date;
     }
 });
