@@ -1,7 +1,10 @@
 angular.module('angular-notifications',[]);
 
 angular.module('angular-notifications').provider('Notification', function() {
+
     this.$get = ["$timeout", "$http", "$compile", "$templateCache","$rootScope", "$injector", "$sce", "$q", "$window",function($timeout, $http, $compile, $templateCache, $rootScope, $injector, $sce, $q, $window) {
+        
+        var notificationList = [];
         
         var notify = function(args, notify_type){
             /*
@@ -10,6 +13,8 @@ angular.module('angular-notifications').provider('Notification', function() {
             var scope =  $rootScope.$new();
             
             var closeNotification = function(notification){
+                notificationList.splice(notificationList.indexOf(notification), 1);
+                console.log(notificationList.length);
                 notification.remove();
                 scope.$destroy();
                 $timeout.cancel(timer);
@@ -32,7 +37,9 @@ angular.module('angular-notifications').provider('Notification', function() {
                 console.log("12331");
             }, 5000);
 
-            angular.element(document.querySelector('body')).append(templateElement);            
+            angular.element(document.querySelector('body')).append(templateElement);
+            notificationList.push(templateElement);
+            console.log(notificationList.length);            
         }
 
         notify.success = function(args){
