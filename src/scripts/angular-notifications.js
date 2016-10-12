@@ -10,36 +10,67 @@ angular.module('angular-notifications').provider('Notification', function() {
             /*
               notify_type - success, info, warning, danger  
             */
+            /*
+                args = {
+                    'delay' : 0, //mean that timer is not working
+                    'text' : '', //text for notification
+                }
+            */
+            var text = "";
+            if (typeof(args) === "string"){
+                text = args;
+            }else if(args.text){
+                text = args.text;
+            }else{
+                text = 'Oops!';
+            }
+
+            var timer = undefined;
             var scope =  $rootScope.$new();
-            
-            var closeNotification = function(notification){
-                notificationList.splice(notificationList.indexOf(notification), 1);
-                console.log(notificationList.length);
-                notification.remove();
-                scope.$destroy();
-                $timeout.cancel(timer);
-            }
-
-            var closeEvent = function(e){
-                var notification = this;
-                closeNotification(notification);
-            }
-
-            var date = new Date();
-
-            var template = '<div class="alert alert-'+notify_type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+args+'</div>'; 
-            //var template = '<div class="notification-body">'+date+'</div>';
+            var template = '<div class="notification clickable alert alert-'+notify_type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+text+'</div>'; 
             var templateElement = $compile(template)(scope);
-            templateElement.bind('click', closeEvent);
 
-            var timer = $timeout(function() {
-                closeNotification(templateElement);
-                console.log("12331");
-            }, 5000);
+            var reposition = function(){
+                var lastBottom = 0,
+                    lastHeight = 0;
 
+                for(var i=notificationList.length; i>0; i--){
+                    var notification = notificationList[i-1];
+                    var newBottom =  lastBottom + lastHeight + 5;
+
+                    lastBottom = newBottom;
+                    lastHeight = parseInt(notification[0].offsetHeight);
+
+                    var bottom = newBottom + 'px';
+                    notification.css('bottom', bottom);
+                }
+            }
+
+            var closeNotification = function(){
+                notificationList.splice(notificationList.indexOf(templateElement), 1);
+                templateElement.remove();
+                scope.$destroy();
+                if (timer){
+                    $timeout.cancel(timer);
+                }
+                reposition();
+            }
+
+               
+            templateElement.bind('click', closeNotification);
+            
+            if (!angular.isUndefined(args.delay) && 
+                angular.isNumber(args.delay) &&
+                args.delay != 0){
+                    timer = $timeout(function() {
+                        closeNotification();
+                        console.log("12331");
+                    }, 5000);                
+            }
+            
             angular.element(document.querySelector('body')).append(templateElement);
             notificationList.push(templateElement);
-            console.log(notificationList.length);            
+            reposition();           
         }
 
         notify.success = function(args){

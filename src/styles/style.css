@@ -1,0 +1,10 @@
+.notification{
+	position: fixed;
+	max-width: 300px;
+	right: 10px;
+	bottom: 0;
+}
+
+.notification.clickable:hover{
+	cursor: pointer;
+}
