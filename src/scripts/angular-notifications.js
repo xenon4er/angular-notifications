@@ -8,11 +8,9 @@ angular.module('angular-notifications').provider('Notification', function() {
         
         var notify = function(args, notify_type){
             /*
-              notify_type - success, info, warning, danger  
-            */
-            /*
+                notify_type can be: success, info, warning, danger  
                 args = {
-                    'delay' : 0, //mean that timer is not working
+                    'delay' : 0, // 0 mean that timer is not working
                     'text' : '', //text for notification
                 }
             */
@@ -41,8 +39,8 @@ angular.module('angular-notifications').provider('Notification', function() {
                     newBottom = 0,
                     notification = undefined;
 
-                for(var i=notificationList.length; i>0; i--){
-                    notification = notificationList[i-1];
+                for(var i=notificationList.length, j=0; j<i; j++){
+                    notification = notificationList[j];
                     newBottom =  lastBottom + lastHeight + 5;
 
                     lastBottom = newBottom;
@@ -62,7 +60,9 @@ angular.module('angular-notifications').provider('Notification', function() {
                 }
                 reposition();
             }
-
+            templateElement.closeCurrentNotification = function(){
+                closeNotification();
+            }
                
             templateElement.bind('click', closeNotification);
             
@@ -71,7 +71,9 @@ angular.module('angular-notifications').provider('Notification', function() {
                     closeNotification();
                 }, 5000);                
             }
-            
+            if(notificationList.length > 4){
+                notificationList[0].closeCurrentNotification();
+            }
             angular.element(document.querySelector('body')).append(templateElement);
             notificationList.push(templateElement);
             reposition();           
