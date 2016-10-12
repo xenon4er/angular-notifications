@@ -2,7 +2,7 @@ angular.module('angular-notifications',[]);
 
 angular.module('angular-notifications').provider('Notification', function() {
 
-    this.$get = ["$timeout", "$http", "$compile", "$templateCache","$rootScope", "$injector", "$sce", "$q", "$window",function($timeout, $http, $compile, $templateCache, $rootScope, $injector, $sce, $q, $window) {
+    this.$get = ["$timeout", "$compile", "$rootScope", function($timeout, $compile, $rootScope) {
         
         var notificationList = [];
         
@@ -19,10 +19,14 @@ angular.module('angular-notifications').provider('Notification', function() {
             var text = "";
             if (typeof(args) === "string"){
                 text = args;
-            }else if(args.text){
+            }else if(!angular.isUndefined(args.text)){
                 text = args.text;
             }else{
                 text = 'Oops!';
+            }
+
+            if(angular.isUndefined(args.delay) || !angular.isNumber(args.delay)){
+                args.delay = 0;
             }
 
             var timer = undefined;
@@ -32,16 +36,19 @@ angular.module('angular-notifications').provider('Notification', function() {
 
             var reposition = function(){
                 var lastBottom = 0,
-                    lastHeight = 0;
+                    lastHeight = 0,
+                    bottom = 0,
+                    newBottom = 0,
+                    notification = undefined;
 
                 for(var i=notificationList.length; i>0; i--){
-                    var notification = notificationList[i-1];
-                    var newBottom =  lastBottom + lastHeight + 5;
+                    notification = notificationList[i-1];
+                    newBottom =  lastBottom + lastHeight + 5;
 
                     lastBottom = newBottom;
                     lastHeight = parseInt(notification[0].offsetHeight);
 
-                    var bottom = newBottom + 'px';
+                    bottom = newBottom + 'px';
                     notification.css('bottom', bottom);
                 }
             }
@@ -59,13 +66,10 @@ angular.module('angular-notifications').provider('Notification', function() {
                
             templateElement.bind('click', closeNotification);
             
-            if (!angular.isUndefined(args.delay) && 
-                angular.isNumber(args.delay) &&
-                args.delay != 0){
-                    timer = $timeout(function() {
-                        closeNotification();
-                        console.log("12331");
-                    }, 5000);                
+            if (args.delay){
+                timer = $timeout(function() {
+                    closeNotification();
+                }, 5000);                
             }
             
             angular.element(document.querySelector('body')).append(templateElement);
