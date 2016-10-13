@@ -39,8 +39,8 @@ angular.module('angular-notifications').provider('Notification', function() {
                     newBottom = 0,
                     notification = undefined;
 
-                for(var i=notificationList.length, j=0; j<i; j++){
-                    notification = notificationList[j];
+                for(var i=notificationList.length; i>0; i--){
+                    notification = notificationList[i-1];
                     newBottom =  lastBottom + lastHeight + 5;
 
                     lastBottom = newBottom;
