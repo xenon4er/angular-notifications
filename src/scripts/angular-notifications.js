@@ -50,14 +50,26 @@ angular.module('angular-notifications').provider('Notification', function() {
                     notification.css('bottom', bottom);
                 }
             }
+            var canselTimer = function(){
+                if (!angular.isUndefined(timer)){
+                    $timeout.cancel(timer);
+                    timer = undefined;
+                }
+            }
+            var startTimer = function(){
+                if (args.delay && angular.isUndefined(timer)){
+                    console.log("start timer");
+                    timer = $timeout(function() {
+                        closeNotification();
+                    }, 5000);                
+                }
+            }
 
             var closeNotification = function(){
                 notificationList.splice(notificationList.indexOf(templateElement), 1);
                 templateElement.remove();
                 scope.$destroy();
-                if (timer){
-                    $timeout.cancel(timer);
-                }
+                canselTimer();
                 reposition();
             }
             templateElement.closeCurrentNotification = function(){
@@ -65,12 +77,10 @@ angular.module('angular-notifications').provider('Notification', function() {
             }
                
             templateElement.bind('click', closeNotification);
+            templateElement.bind('mouseover', canselTimer);
+            templateElement.bind('mouseout', startTimer);
             
-            if (args.delay){
-                timer = $timeout(function() {
-                    closeNotification();
-                }, 5000);                
-            }
+            startTimer();
             if(notificationList.length > 4){
                 notificationList[0].closeCurrentNotification();
             }
